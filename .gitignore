@@ -1,0 +1,8 @@
+# Hasil compile — auto-generated, jangan di-commit
+bin/
+
+# File IDE (opsional, sesuaikan dengan IDE yang dipakai tim)
+.idea/
+*.iml
+.vscode/
+*.class
