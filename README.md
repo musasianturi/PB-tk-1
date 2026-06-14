@@ -1,10 +1,10 @@
 # TravelKu — Sistem Pemesanan Perjalanan
 
-Aplikasi konsol Java yang mensimulasikan platform pemesanan perjalanan (terinspirasi Traveloka/Tiket.com). Dibangun untuk tugas kuliah **Introduction to Programming for Business — TK-1**.
+Aplikasi konsol Java yang mensimulasikan platform pemesanan perjalanan (penerbangan & hotel).
 
 ---
 
-## Cara Setup & Menjalankan
+## Cara Menjalankan
 
 ### Prasyarat
 - **Java 17** atau lebih tinggi (wajib, untuk fitur `sealed class` dan `pattern matching`)
@@ -12,275 +12,135 @@ Aplikasi konsol Java yang mensimulasikan platform pemesanan perjalanan (terinspi
 
 ### Compile
 
-Dari folder root proyek (`TK-1/`), jalankan:
+Dari folder root proyek (`TK-1/`):
 
 ```bash
 # macOS / Linux
-find src -name "*.java" -print0 | xargs -0 javac -d bin
+find src -name "*.java" | xargs javac -d out
 
 # Windows (Command Prompt)
 for /r src %f in (*.java) do @echo %f >> sources.txt
-javac -d bin @sources.txt
+javac -d out @sources.txt
 del sources.txt
 ```
 
 ### Jalankan
 
 ```bash
-java -cp bin Main
-```
-
-### Struktur Output Direktori
-
-Setelah compile, folder `bin/` akan berisi semua file `.class` yang siap dijalankan.
-
----
-
-## Struktur Proyek
-
-```
-TK-1/
-├── src/
-│   ├── Main.java                    [FULL]  Entry point — main loop & routing menu
-│   ├── app/
-│   │   └── TravelApp.java           [TODO]  Logika bisnis utama — BAGIAN 3
-│   ├── model/
-│   │   ├── Reservation.java         [FULL]  sealed abstract class — superclass reservasi
-│   │   ├── Flight.java              [TODO]  Entity penerbangan — BAGIAN 1
-│   │   ├── Hotel.java               [TODO]  Entity hotel — BAGIAN 1
-│   │   ├── FlightReservation.java   [TODO]  Reservasi penerbangan — BAGIAN 2
-│   │   └── HotelReservation.java    [TODO]  Reservasi hotel — BAGIAN 2
-│   ├── interfaces/
-│   │   └── Bookable.java            [FULL]  Interface kontrak pemesanan
-│   ├── exceptions/
-│   │   └── ReservationNotFoundException.java  [FULL]  Custom exception
-│   └── util/
-│       └── ConfirmationNumberGenerator.java   [FULL]  Generator nomor konfirmasi
-└── README.md
-```
-
-**[FULL]** = sudah selesai, jangan diubah kecuali ada alasan kuat  
-**[TODO]** = bagian yang harus diimplementasikan tim
-
----
-
-## Pembagian Tugas Tim
-
-> Tim bebas menentukan siapa mengerjakan bagian mana. Satu bagian bisa dikerjakan bersama-sama atau dibagi per file. Setelah selesai, integrasikan semua bagian dan uji bersama.
-
-### Bagian 1 — Entity Classes (Model Layer)
-
-| File | Yang Dikerjakan | Konsep Java |
-|------|----------------|-------------|
-| `src/model/Flight.java` | Constructor, semua getter, setter `setAvailableSeats()`, `toString()` | Encapsulation, Constructor |
-| `src/model/Hotel.java` | Constructor, semua getter, setter `setAvailableRooms()`, `toString()` | Encapsulation, Constructor |
-
-**Tips Bagian 1:**
-- Semua field sudah dideklarasikan, tinggal isi body method yang ada komentar `// TODO`
-- Constructor: assign `this.fieldName = parameterName` untuk setiap field
-- Getter: `return fieldName;`
-- Setter: `this.fieldName = parameterName;`
-- `toString()`: gunakan `String.format()` untuk format yang rapi
-
----
-
-### Bagian 2 — Reservation Classes (Inheritance & Polymorphism)
-
-| File | Yang Dikerjakan | Konsep Java |
-|------|----------------|-------------|
-| `src/model/FlightReservation.java` | Constructor, `book()`, `cancel()`, `display()`, getter | Inheritance, Polymorphism, Override |
-| `src/model/HotelReservation.java` | Constructor, `book()`, `cancel()`, `display()`, getter | Inheritance, Polymorphism, Override |
-
-**Tips Bagian 2:**
-- `book()`: generate nomor konfirmasi + update seats/rooms
-- `cancel()`: kembalikan seats/rooms ke kondisi sebelum booking
-- `display()`: tampilkan semua detail reservasi dalam format rapi (lihat contoh di komentar tiap file)
-- Field `confirmationNumber`, `customerName`, `customerContact` diwarisi dari `Reservation` — akses langsung dengan `this.confirmationNumber`
-- Gunakan `ConfirmationNumberGenerator.generate()` untuk nomor konfirmasi
-
-**Catatan Pattern Matching (Bagian 2):**
-Kelas ini akan dikenali di `cancelReservation()` dengan sintaks:
-```java
-if (res instanceof FlightReservation fr) {
-    fr.cancel(); // 'fr' sudah bertipe FlightReservation, tidak perlu cast manual
-}
+java -cp out Main
 ```
 
 ---
 
-### Bagian 3 — Business Logic (TravelApp)
 
-| File | Yang Dikerjakan | Konsep Java |
-|------|----------------|-------------|
-| `src/app/TravelApp.java` | `initSampleData()`, `searchFlights()`, `searchAndBookFlight()`, `bookFlight()`, `searchHotels()`, `searchAndBookHotel()`, `bookHotel()`, `cancelReservation()`, `promptCancelReservation()`, `viewAllReservations()` | Stream, Lambda, Exception handling, Pattern matching |
+## Deskripsi Kelas
 
-**Tips Bagian 3:**
+### `Main`
+Entry point. Membuat satu `TravelApp`, lalu menjalankan loop menu dengan `switch` expression. Input angka dijaga dengan `try-catch InputMismatchException`.
 
-Urutan implementasi yang disarankan:
+### `TravelApp`
+Pusat logika bisnis. Menyimpan tiga `ArrayList`:
+- `flights` — inventori penerbangan
+- `hotels` — inventori hotel
+- `reservations` — semua reservasi aktif
 
-1. **`initSampleData()`** — tambah 5+ penerbangan dan 5+ hotel ke ArrayList. Ini yang pertama harus jalan agar fitur lain bisa ditest.
+Menyediakan method untuk setiap menu: search, book, cancel, dan view.
 
-2. **`searchFlights()`** — gunakan stream + lambda:
-   ```java
-   return flights.stream()
-       .filter(f -> f.getOrigin().equalsIgnoreCase(origin))
-       .filter(f -> f.getDestination().equalsIgnoreCase(destination))
-       .filter(f -> f.getDate().equals(date))
-       .filter(f -> f.getAvailableSeats() >= passengerCount)
-       .collect(Collectors.toList());
-   ```
+### `Flight`
+Entity data penerbangan. Menyimpan nomor penerbangan, rute, tanggal, ketersediaan kursi, dan harga per kursi.
 
-3. **`searchAndBookFlight()`** — alur UI: minta input → tampilkan hasil → pilih → input data → panggil `bookFlight()`
+### `Hotel`
+Entity data hotel. Menyimpan ID, nama, lokasi, tanggal check-in/out, ketersediaan kamar, dan harga per malam.
 
-4. **`bookFlight()`**:
-   ```java
-   FlightReservation res = new FlightReservation(flight, passengerCount, name, contact);
-   res.book();
-   reservations.add(res);
-   res.display();
-   ```
+### `Reservation` *(sealed abstract)*
+Superclass untuk semua reservasi. Menyimpan field bersama: `confirmationNumber`, `customerName`, `customerContact`. Mendeklarasikan method abstrak `display()` dan mewarisi kontrak `Bookable`.
 
-5. **`searchHotels()`** dan **`searchAndBookHotel()`** — mirip alur penerbangan
+### `FlightReservation` *(extends Reservation)*
+- `book()` — generate nomor konfirmasi, kurangi `availableSeats` sesuai `passengerCount`
+- `cancel()` — kembalikan `availableSeats`
+- `display()` — cetak kotak konfirmasi; total harga = `passengerCount × pricePerSeat`
 
-6. **`cancelReservation()`** — gunakan pattern matching:
-   ```java
-   for (Reservation res : reservations) {
-       if (res.getConfirmationNumber() == confirmationNumber) {
-           if (res instanceof FlightReservation fr) { fr.cancel(); }
-           else if (res instanceof HotelReservation hr) { hr.cancel(); }
-           reservations.remove(res);
-           return;
-       }
-   }
-   throw new ReservationNotFoundException(confirmationNumber);
-   ```
+### `HotelReservation` *(extends Reservation)*
+- `book()` — generate nomor konfirmasi, kurangi `availableRooms` sebesar 1
+- `cancel()` — kembalikan `availableRooms`
+- `display()` — cetak kotak konfirmasi; total harga = `jumlah malam × pricePerNight`
 
-7. **`viewAllReservations()`** — iterasi `reservations`, panggil `.display()` tiap elemen
+### `Bookable` *(interface)*
+Mendefinisikan kontrak: `book()`, `cancel()`, `getConfirmationNumber()`.
 
----
+### `ConfirmationNumberGenerator`
+Utility class `final`. Method statis `generate()` mengembalikan angka acak 6 digit (100000–999999).
 
-## Konvensi Kode
+### `ReservationNotFoundException`
+Custom exception yang dilempar oleh `cancelReservation()` jika nomor konfirmasi tidak ditemukan.
 
-Ikuti konvensi Java standar agar kode konsisten antar anggota tim:
+## Data Sampel (dimuat saat aplikasi start)
 
-| Elemen | Konvensi | Contoh |
-|--------|----------|--------|
-| Nama kelas | `PascalCase` | `FlightReservation`, `TravelApp` |
-| Nama method & variabel | `camelCase` | `searchFlights()`, `passengerCount` |
-| Nama konstanta | `UPPER_SNAKE_CASE` | `MAX_RETRIES`, `DEFAULT_PRICE` |
-| Nama package | huruf kecil semua | `model`, `app`, `interfaces` |
-| Komentar | Bahasa Indonesia atau Inggris, konsisten | `// Cari penerbangan sesuai kriteria` |
-| Indentasi | 4 spasi | (gunakan IDE auto-format) |
+| Kode | Rute | Tanggal | Kursi | Harga/kursi |
+|------|------|---------|-------|-------------|
+| GA-101 | Jakarta → Bali | 2026-08-01 | 50 | Rp 1.500.000 |
+| QG-201 | Jakarta → Surabaya | 2026-08-01 | 80 | Rp 800.000 |
+| ID-301 | Bali → Lombok | 2026-08-02 | 30 | Rp 600.000 |
+| GA-401 | Surabaya → Makassar | 2026-08-03 | 60 | Rp 1.200.000 |
+| SJ-501 | Jakarta → Yogyakarta | 2026-08-01 | 100 | Rp 700.000 |
 
----
-
-## Alur Program (Flowchart Konseptual)
-
-```
-Program Start
-     │
-     ▼
-  [Main Loop] ─── Tampilkan Menu ─── Baca Pilihan
-     │
-     ├── 1: Cari Penerbangan ──► minta input ──► searchFlights() ──► tampilkan ──► bookFlight()
-     │
-     ├── 2: Cari Hotel ────────► minta input ──► searchHotels() ───► tampilkan ──► bookHotel()
-     │
-     ├── 3: Lihat Semua ───────► viewAllReservations() ──► display() tiap reservasi
-     │
-     ├── 4: Batalkan ──────────► minta nomor ──► cancelReservation() ──► remove dari list
-     │                                                    │
-     │                                               [tidak ada] ──► ReservationNotFoundException
-     │
-     └── 0: Keluar ───────────► Program selesai
-```
-
----
-
-## Hierarki Kelas (UML Sederhana)
-
-```
-<<interface>>
-  Bookable
-  + book(): void
-  + cancel(): void
-  + getConfirmationNumber(): int
-      ▲
-      │ implements
-      │
-sealed abstract class
-  Reservation (implements Bookable)
-  # confirmationNumber: int
-  # customerName: String
-  # customerContact: String
-  + display(): void  [abstract]
-      ▲
-      ├────────────────────────┐
-      │                        │
-  FlightReservation        HotelReservation
-  - flight: Flight         - hotel: Hotel
-  - passengerCount: int    - guestCount: int
-  + book()                 + book()
-  + cancel()               + cancel()
-  + display()              + display()
-
-
-  Flight                   Hotel
-  - flightNumber: String   - hotelId: String
-  - origin: String         - name: String
-  - destination: String    - location: String
-  - date: String           - checkInDate: String
-  - availableSeats: int    - checkOutDate: String
-  - pricePerSeat: double   - availableRooms: int
-  + getters/setters        - pricePerNight: double
-  + toString()             + getters/setters
-                           + toString()
-
-final class
-  ConfirmationNumberGenerator
-  + generate(): int  [static]
-
-class
-  ReservationNotFoundException extends Exception
-  + getConfirmationNumber(): int
-```
+| Kode | Hotel | Lokasi | Check-in | Check-out | Kamar | Harga/malam |
+|------|-------|--------|----------|-----------|-------|-------------|
+| HTL-001 | Hotel Mulia Jakarta | Jakarta | 2026-08-01 | 2026-08-03 | 10 | Rp 800.000 |
+| HTL-002 | Potato Head Beach Club | Bali | 2026-08-01 | 2026-08-04 | 5 | Rp 2.500.000 |
+| HTL-003 | Sheraton Surabaya | Surabaya | 2026-08-01 | 2026-08-02 | 15 | Rp 600.000 |
+| HTL-004 | Tentrem Yogyakarta | Yogyakarta | 2026-08-01 | 2026-08-03 | 8 | Rp 1.100.000 |
+| HTL-005 | Aston Makassar | Makassar | 2026-08-01 | 2026-08-03 | 20 | Rp 500.000 |
 
 ---
 
 ## Test Cases
 
-Setelah semua implementasi selesai, pastikan skenario berikut berjalan dengan benar:
+### Positif
 
-| # | Skenario | Input | Expected Output |
-|---|----------|-------|-----------------|
-| 1 | Cari penerbangan — ada | Origin: Jakarta, Dest: Bali, Date: 2025-08-01, Penumpang: 2 | Daftar penerbangan ditampilkan |
-| 2 | Cari penerbangan — tidak ada | Origin: Solo, Dest: Manado, Date: 2025-08-01, Penumpang: 1 | "Tidak ada penerbangan tersedia" |
-| 3 | Pesan penerbangan | Pilih no.1, Nama: Budi, Kontak: 08123 | Nomor konfirmasi 6 digit tampil |
-| 4 | Cari hotel — ada | Lokasi: Bali, Check-in: 2025-08-01, Check-out: 2025-08-04, Tamu: 2 | Daftar hotel ditampilkan |
-| 5 | Pesan hotel | Pilih no.1, Nama: Siti, Kontak: 08987 | Nomor konfirmasi 6 digit tampil |
-| 6 | Lihat semua pemesanan | Menu 3 | Semua reservasi dari tes 3 & 5 tampil |
-| 7 | Batalkan — valid | Nomor konfirmasi dari tes 3 | "Reservasi berhasil dibatalkan" |
-| 8 | Batalkan — tidak ada | 999999 (angka acak) | Pesan ReservationNotFoundException |
-| 9 | Input tidak valid | Ketik "abc" di field angka | Pesan error, program tidak crash |
-| 10 | Keluar | Menu 0 | "Terima kasih" & program exit |
+| # | Method yang Ditest | Input | Output yang Diharapkan |
+|---|---|---|---|
+| P1 | `searchFlights` | Asal: `Jakarta`, Tujuan: `Bali`, Tanggal: `2026-08-01`, Penumpang: `1` | List tidak kosong, elemen pertama adalah GA-101 |
+| P2 | `searchFlights` (case-insensitive) | Asal: `jakarta`, Tujuan: `bali`, Tanggal: `2026-08-01`, Penumpang: `1` | Jumlah dan isi hasil sama dengan P1 |
+| P3 | `searchHotels` | Kota: `Bali`, Check-in: `2026-08-01`, Check-out: `2026-08-04`, Tamu: `2` | List tidak kosong, elemen pertama adalah HTL-002 |
+| P4 | `FlightReservation.book()` | Flight 50 kursi, 2 penumpang | `availableSeats == 48`, nomor konfirmasi 6 digit (100000–999999) |
+| P5 | `FlightReservation.book()` → `cancel()` | Flight 50 kursi, 3 penumpang | Setelah cancel, `availableSeats` kembali ke 50 |
+
+### Negatif
+
+| # | Method yang Ditest | Input | Output yang Diharapkan |
+|---|---|---|---|
+| N1 | `searchFlights` | Asal: `Solo`, Tujuan: `Manado`, Tanggal: `2026-08-01`, Penumpang: `1` | List kosong (rute tidak ada) |
+| N2 | `searchFlights` | Asal: `Jakarta`, Tujuan: `Bali`, Tanggal: `2026-08-01`, Penumpang: `999` | List kosong (kursi tidak cukup) |
+| N3 | `searchHotels` | Kota: `Bandung`, Check-in: `2026-08-01`, Check-out: `2026-08-03`, Tamu: `1` | List kosong (kota tidak ada di data) |
+| N4 | `cancelReservation` | Nomor konfirmasi: `999999` | Throws `ReservationNotFoundException` |
+| N5 | `searchHotels` | Kota: `Jakarta`, Check-in: `2026-08-01`, Check-out: `2026-08-05`, Tamu: `1` | List kosong (tanggal check-out tidak cocok dengan data) |
 
 ---
 
-## Fitur Java yang Harus Terlihat di Kode
+## Contoh Penggunaan
 
-Pastikan semua konsep berikut muncul dalam implementasi akhir (untuk penilaian rubrik):
+```
+Menu 1 — Cari Penerbangan:
+  Kota asal           : Jakarta
+  Kota tujuan         : Bali
+  Tanggal (YYYY-MM-DD): 2026-08-01
+  Jumlah penumpang    : 2
+  → Tampil GA-101, pilih 1, isi nama & kontak
+  → Kotak konfirmasi cetak dengan total Rp 3.000.000
 
-- [ ] **I/O**: `Scanner` untuk input, `System.out.println` untuk output
-- [ ] **Kelas & Objek**: `Flight`, `Hotel`, instansiasi dengan `new`
-- [ ] **Kontrol**: `while(true)` loop, `switch`, `if-else`
-- [ ] **Koleksi**: `ArrayList<Flight>`, `ArrayList<Hotel>`, `ArrayList<Reservation>`
-- [ ] **Stream & Lambda**: `.stream().filter(f -> ...).collect()`
-- [ ] **Enkapsulasi**: semua field `private`, diakses via `getter/setter`
-- [ ] **Pewarisan**: `FlightReservation extends Reservation`
-- [ ] **Polimorfisme**: `reservations.forEach(r -> r.display())`
-- [ ] **Abstract class**: `abstract class Reservation` dengan `abstract display()`
-- [ ] **Interface**: `Bookable` dengan `book()` dan `cancel()`
-- [ ] **Exception handling**: `try-catch InputMismatchException`, `ReservationNotFoundException`
-- [ ] **Pattern Matching**: `if (res instanceof FlightReservation fr)`
-- [ ] **Sealed class**: `sealed abstract class Reservation permits ...`
-- [ ] **Final class**: `final class ConfirmationNumberGenerator`
+Menu 2 — Cari Hotel:
+  Kota                      : Jakarta
+  Tanggal check-in  (YYYY-MM-DD): 2026-08-01
+  Tanggal check-out (YYYY-MM-DD): 2026-08-03
+  Jumlah tamu               : 2
+  → Tampil HTL-001, pilih 1, isi nama & kontak
+  → Kotak konfirmasi cetak dengan total Rp 1.600.000 (2 malam × Rp 800.000)
+
+Menu 3 — Lihat Semua Pemesanan:
+  → Cetak kedua reservasi di atas
+
+Menu 4 — Batalkan:
+  → Masukkan nomor konfirmasi dari salah satu pemesanan
+  → Reservasi dihapus, kursi/kamar dikembalikan
+```
