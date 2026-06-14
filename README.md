@@ -43,13 +43,13 @@ TK-1/
 ├── src/
 │   ├── Main.java                    [FULL]  Entry point — main loop & routing menu
 │   ├── app/
-│   │   └── TravelApp.java           [TODO]  Logika bisnis utama — ANGGOTA 3
+│   │   └── TravelApp.java           [TODO]  Logika bisnis utama — BAGIAN 3
 │   ├── model/
 │   │   ├── Reservation.java         [FULL]  sealed abstract class — superclass reservasi
-│   │   ├── Flight.java              [TODO]  Entity penerbangan — ANGGOTA 1
-│   │   ├── Hotel.java               [TODO]  Entity hotel — ANGGOTA 1
-│   │   ├── FlightReservation.java   [TODO]  Reservasi penerbangan — ANGGOTA 2
-│   │   └── HotelReservation.java    [TODO]  Reservasi hotel — ANGGOTA 2
+│   │   ├── Flight.java              [TODO]  Entity penerbangan — BAGIAN 1
+│   │   ├── Hotel.java               [TODO]  Entity hotel — BAGIAN 1
+│   │   ├── FlightReservation.java   [TODO]  Reservasi penerbangan — BAGIAN 2
+│   │   └── HotelReservation.java    [TODO]  Reservasi hotel — BAGIAN 2
 │   ├── interfaces/
 │   │   └── Bookable.java            [FULL]  Interface kontrak pemesanan
 │   ├── exceptions/
@@ -66,16 +66,16 @@ TK-1/
 
 ## Pembagian Tugas Tim
 
-> Setiap anggota mengerjakan file yang ditandai, lalu merge/integrasikan bersama.
+> Tim bebas menentukan siapa mengerjakan bagian mana. Satu bagian bisa dikerjakan bersama-sama atau dibagi per file. Setelah selesai, integrasikan semua bagian dan uji bersama.
 
-### Anggota 1 — Entity Classes (Model Layer)
+### Bagian 1 — Entity Classes (Model Layer)
 
 | File | Yang Dikerjakan | Konsep Java |
 |------|----------------|-------------|
 | `src/model/Flight.java` | Constructor, semua getter, setter `setAvailableSeats()`, `toString()` | Encapsulation, Constructor |
 | `src/model/Hotel.java` | Constructor, semua getter, setter `setAvailableRooms()`, `toString()` | Encapsulation, Constructor |
 
-**Tips untuk Anggota 1:**
+**Tips Bagian 1:**
 - Semua field sudah dideklarasikan, tinggal isi body method yang ada komentar `// TODO`
 - Constructor: assign `this.fieldName = parameterName` untuk setiap field
 - Getter: `return fieldName;`
@@ -84,21 +84,21 @@ TK-1/
 
 ---
 
-### Anggota 2 — Reservation Classes (Inheritance & Polymorphism)
+### Bagian 2 — Reservation Classes (Inheritance & Polymorphism)
 
 | File | Yang Dikerjakan | Konsep Java |
 |------|----------------|-------------|
 | `src/model/FlightReservation.java` | Constructor, `book()`, `cancel()`, `display()`, getter | Inheritance, Polymorphism, Override |
 | `src/model/HotelReservation.java` | Constructor, `book()`, `cancel()`, `display()`, getter | Inheritance, Polymorphism, Override |
 
-**Tips untuk Anggota 2:**
+**Tips Bagian 2:**
 - `book()`: generate nomor konfirmasi + update seats/rooms
 - `cancel()`: kembalikan seats/rooms ke kondisi sebelum booking
 - `display()`: tampilkan semua detail reservasi dalam format rapi (lihat contoh di komentar tiap file)
 - Field `confirmationNumber`, `customerName`, `customerContact` diwarisi dari `Reservation` — akses langsung dengan `this.confirmationNumber`
 - Gunakan `ConfirmationNumberGenerator.generate()` untuk nomor konfirmasi
 
-**Catatan Pattern Matching untuk Anggota 2:**
+**Catatan Pattern Matching (Bagian 2):**
 Kelas ini akan dikenali di `cancelReservation()` dengan sintaks:
 ```java
 if (res instanceof FlightReservation fr) {
@@ -108,13 +108,13 @@ if (res instanceof FlightReservation fr) {
 
 ---
 
-### Anggota 3 — Business Logic (TravelApp)
+### Bagian 3 — Business Logic (TravelApp)
 
 | File | Yang Dikerjakan | Konsep Java |
 |------|----------------|-------------|
 | `src/app/TravelApp.java` | `initSampleData()`, `searchFlights()`, `searchAndBookFlight()`, `bookFlight()`, `searchHotels()`, `searchAndBookHotel()`, `bookHotel()`, `cancelReservation()`, `promptCancelReservation()`, `viewAllReservations()` | Stream, Lambda, Exception handling, Pattern matching |
 
-**Tips untuk Anggota 3:**
+**Tips Bagian 3:**
 
 Urutan implementasi yang disarankan:
 
