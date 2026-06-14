@@ -51,12 +51,12 @@ public class Flight {
     public Flight(String flightNumber, String origin, String destination,
                   String date, int availableSeats, double pricePerSeat) {
         // TODO [ANGGOTA 1]: assign setiap parameter ke field yang sesuai
-        // this.flightNumber  = flightNumber;
-        // this.origin        = origin;
-        // this.destination   = destination;
-        // this.date          = date;
-        // this.availableSeats = availableSeats;
-        // this.pricePerSeat  = pricePerSeat;
+        this.flightNumber  = flightNumber;
+        this.origin        = origin;
+        this.destination   = destination;
+        this.date          = date;
+        this.availableSeats = availableSeats;
+        this.pricePerSeat  = pricePerSeat;
     }
 
     // =================== GETTERS ===================
@@ -67,42 +67,42 @@ public class Flight {
      * TODO [ANGGOTA 1]: return nilai field flightNumber
      */
     public String getFlightNumber() {
-        return null; // TODO: return flightNumber;
+        return flightNumber; // TODO: return flightNumber;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field origin
      */
     public String getOrigin() {
-        return null; // TODO: return origin;
+        return origin; // TODO: return origin;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field destination
      */
     public String getDestination() {
-        return null; // TODO: return destination;
+        return destination; // TODO: return destination;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field date
      */
     public String getDate() {
-        return null; // TODO: return date;
+        return date; // TODO: return date;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field availableSeats
      */
     public int getAvailableSeats() {
-        return 0; // TODO: return availableSeats;
+        return availableSeats; // TODO: return availableSeats;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field pricePerSeat
      */
     public double getPricePerSeat() {
-        return 0.0; // TODO: return pricePerSeat;
+        return pricePerSeat; // TODO: return pricePerSeat;
     }
 
     // =================== SETTERS ===================
@@ -115,6 +115,7 @@ public class Flight {
      */
     public void setAvailableSeats(int availableSeats) {
         // TODO: this.availableSeats = availableSeats;
+        this.availableSeats = availableSeats;
     }
 
     // =================== TO STRING ===================
@@ -137,6 +138,14 @@ public class Flight {
     @Override
     public String toString() {
         // TODO [ANGGOTA 1]: implementasikan format di atas menggunakan String.format()
-        return "Flight [belum diimplementasikan — implementasikan toString() di Flight.java]";
+        return String.format(
+                "[%s] %s → %s | Tanggal: %s | Kursi: %d | Harga: Rp %,.0f/kursi",
+                flightNumber,
+                origin,
+                destination,
+                date,
+                availableSeats,
+                pricePerSeat
+        );
     }
 }
