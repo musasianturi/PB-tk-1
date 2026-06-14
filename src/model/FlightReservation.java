@@ -52,11 +52,10 @@ public final class FlightReservation extends Reservation {
      */
     public FlightReservation(Flight flight, int passengerCount,
                              String customerName, String customerContact) {
-        // TODO [ANGGOTA 2]: assign semua parameter ke fields
-        // this.flight          = flight;
-        // this.passengerCount  = passengerCount;
-        // this.customerName    = customerName;    ← field dari Reservation
-        // this.customerContact = customerContact; ← field dari Reservation
+        this.flight          = flight;
+        this.passengerCount  = passengerCount;
+        this.customerName    = customerName;
+        this.customerContact = customerContact;
     }
 
     // =================== OVERRIDE: book() ===================
@@ -77,8 +76,9 @@ public final class FlightReservation extends Reservation {
      */
     @Override
     public void book() {
-        // TODO [ANGGOTA 2]: implementasikan langkah-langkah di atas
-        System.out.println("[TODO] FlightReservation.book() belum diimplementasikan");
+        this.confirmationNumber = ConfirmationNumberGenerator.generate();
+        flight.setAvailableSeats(flight.getAvailableSeats() - passengerCount);
+        System.out.println("Pemesanan berhasil! No. Konfirmasi: " + confirmationNumber);
     }
 
     // =================== OVERRIDE: cancel() ===================
@@ -96,8 +96,8 @@ public final class FlightReservation extends Reservation {
      */
     @Override
     public void cancel() {
-        // TODO [ANGGOTA 2]: implementasikan langkah-langkah di atas
-        System.out.println("[TODO] FlightReservation.cancel() belum diimplementasikan");
+        flight.setAvailableSeats(flight.getAvailableSeats() + passengerCount);
+        System.out.println("Pemesanan penerbangan " + flight.getFlightNumber() + " dibatalkan.");
     }
 
     // =================== OVERRIDE: display() ===================
@@ -126,10 +126,19 @@ public final class FlightReservation extends Reservation {
      */
     @Override
     public void display() {
-        // TODO [ANGGOTA 2]: implementasikan tampilan di atas dengan System.out.println()
-        System.out.println("[TODO] FlightReservation.display() belum diimplementasikan");
-        System.out.println("  Konfirmasi: " + confirmationNumber
-                + " | Penumpang: " + customerName);
+        double totalHarga = passengerCount * flight.getPricePerSeat();
+        System.out.println("┌────────────────────────────────────────────┐");
+        System.out.println("│      KONFIRMASI PEMESANAN PENERBANGAN      │");
+        System.out.println("├────────────────────────────────────────────┤");
+        System.out.printf( "│ No. Konfirmasi : %-27d│%n", confirmationNumber);
+        System.out.printf( "│ Nama Penumpang : %-27s│%n", customerName);
+        System.out.printf( "│ Kontak         : %-27s│%n", customerContact);
+        System.out.printf( "│ Penerbangan    : %-27s│%n", flight.getFlightNumber());
+        System.out.printf( "│ Rute           : %-27s│%n", flight.getOrigin() + " → " + flight.getDestination());
+        System.out.printf( "│ Tanggal        : %-27s│%n", flight.getDate());
+        System.out.printf( "│ Jumlah Tiket   : %-27d│%n", passengerCount);
+        System.out.printf( "│ Total Harga    : %-27s│%n", String.format("Rp %,.0f", totalHarga));
+        System.out.println("└────────────────────────────────────────────┘");
     }
 
     // =================== GETTERS ===================
@@ -138,13 +147,13 @@ public final class FlightReservation extends Reservation {
      * TODO [ANGGOTA 2]: return nilai field flight
      */
     public Flight getFlight() {
-        return null; // TODO: return flight;
+        return flight;
     }
 
     /**
      * TODO [ANGGOTA 2]: return nilai field passengerCount
      */
     public int getPassengerCount() {
-        return 0; // TODO: return passengerCount;
+        return passengerCount;
     }
 }

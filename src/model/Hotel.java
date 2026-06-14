@@ -51,14 +51,13 @@ public class Hotel {
     public Hotel(String hotelId, String name, String location,
                  String checkInDate, String checkOutDate,
                  int availableRooms, double pricePerNight) {
-        // TODO [ANGGOTA 1]: assign setiap parameter ke field yang sesuai
-        // this.hotelId        = hotelId;
-        // this.name           = name;
-        // this.location       = location;
-        // this.checkInDate    = checkInDate;
-        // this.checkOutDate   = checkOutDate;
-        // this.availableRooms = availableRooms;
-        // this.pricePerNight  = pricePerNight;
+        this.hotelId        = hotelId;
+        this.name           = name;
+        this.location       = location;
+        this.checkInDate    = checkInDate;
+        this.checkOutDate   = checkOutDate;
+        this.availableRooms = availableRooms;
+        this.pricePerNight  = pricePerNight;
     }
 
     // =================== GETTERS ===================
@@ -67,49 +66,49 @@ public class Hotel {
      * TODO [ANGGOTA 1]: return nilai field hotelId
      */
     public String getHotelId() {
-        return null; // TODO: return hotelId;
+        return hotelId;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field name
      */
     public String getName() {
-        return null; // TODO: return name;
+        return name;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field location
      */
     public String getLocation() {
-        return null; // TODO: return location;
+        return location;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field checkInDate
      */
     public String getCheckInDate() {
-        return null; // TODO: return checkInDate;
+        return checkInDate;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field checkOutDate
      */
     public String getCheckOutDate() {
-        return null; // TODO: return checkOutDate;
+        return checkOutDate;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field availableRooms
      */
     public int getAvailableRooms() {
-        return 0; // TODO: return availableRooms;
+        return availableRooms;
     }
 
     /**
      * TODO [ANGGOTA 1]: return nilai field pricePerNight
      */
     public double getPricePerNight() {
-        return 0.0; // TODO: return pricePerNight;
+        return pricePerNight;
     }
 
     // =================== SETTERS ===================
@@ -119,7 +118,7 @@ public class Hotel {
      * Dipakai oleh HotelReservation.book() dan cancel() untuk update kamar.
      */
     public void setAvailableRooms(int availableRooms) {
-        // TODO: this.availableRooms = availableRooms;
+        this.availableRooms = availableRooms;
     }
 
     // =================== TO STRING ===================
@@ -135,7 +134,9 @@ public class Hotel {
      */
     @Override
     public String toString() {
-        // TODO [ANGGOTA 1]: implementasikan format di atas
-        return "Hotel [belum diimplementasikan — implementasikan toString() di Hotel.java]";
+        return String.format(
+                "[%s] %s | Lokasi: %s | Check-in: %s | Check-out: %s | Kamar: %d | Harga: Rp %,.0f/malam",
+                hotelId, name, location, checkInDate, checkOutDate, availableRooms, pricePerNight
+        );
     }
 }
