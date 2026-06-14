@@ -2,6 +2,9 @@ package model;
 
 import util.ConfirmationNumberGenerator;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 /**
  * HotelReservation merepresentasikan pemesanan kamar hotel oleh tamu.
  * Menyimpan data hotel yang dipesan beserta informasi tamu.
@@ -44,11 +47,10 @@ public final class HotelReservation extends Reservation {
      */
     public HotelReservation(Hotel hotel, int guestCount,
                             String customerName, String customerContact) {
-        // TODO [ANGGOTA 2]: assign semua parameter ke fields
-        // this.hotel           = hotel;
-        // this.guestCount      = guestCount;
-        // this.customerName    = customerName;
-        // this.customerContact = customerContact;
+        this.hotel           = hotel;
+        this.guestCount      = guestCount;
+        this.customerName    = customerName;
+        this.customerContact = customerContact;
     }
 
     // =================== OVERRIDE: book() ===================
@@ -67,8 +69,9 @@ public final class HotelReservation extends Reservation {
      */
     @Override
     public void book() {
-        // TODO [ANGGOTA 2]: implementasikan langkah-langkah di atas
-        System.out.println("[TODO] HotelReservation.book() belum diimplementasikan");
+        this.confirmationNumber = ConfirmationNumberGenerator.generate();
+        hotel.setAvailableRooms(hotel.getAvailableRooms() - 1);
+        System.out.println("Pemesanan berhasil! No. Konfirmasi: " + confirmationNumber);
     }
 
     // =================== OVERRIDE: cancel() ===================
@@ -84,8 +87,8 @@ public final class HotelReservation extends Reservation {
      */
     @Override
     public void cancel() {
-        // TODO [ANGGOTA 2]: implementasikan langkah-langkah di atas
-        System.out.println("[TODO] HotelReservation.cancel() belum diimplementasikan");
+        hotel.setAvailableRooms(hotel.getAvailableRooms() + 1);
+        System.out.println("Pemesanan hotel " + hotel.getName() + " dibatalkan.");
     }
 
     // =================== OVERRIDE: display() ===================
@@ -116,10 +119,23 @@ public final class HotelReservation extends Reservation {
      */
     @Override
     public void display() {
-        // TODO [ANGGOTA 2]: implementasikan tampilan di atas dengan System.out.println()
-        System.out.println("[TODO] HotelReservation.display() belum diimplementasikan");
-        System.out.println("  Konfirmasi: " + confirmationNumber
-                + " | Tamu: " + customerName);
+        LocalDate checkIn  = LocalDate.parse(hotel.getCheckInDate());
+        LocalDate checkOut = LocalDate.parse(hotel.getCheckOutDate());
+        long nights        = ChronoUnit.DAYS.between(checkIn, checkOut);
+        double totalHarga  = nights * hotel.getPricePerNight();
+        System.out.println("┌────────────────────────────────────────────┐");
+        System.out.println("│         KONFIRMASI PEMESANAN HOTEL         │");
+        System.out.println("├────────────────────────────────────────────┤");
+        System.out.printf( "│ No. Konfirmasi : %-27d│%n", confirmationNumber);
+        System.out.printf( "│ Nama Tamu      : %-27s│%n", customerName);
+        System.out.printf( "│ Kontak         : %-27s│%n", customerContact);
+        System.out.printf( "│ Hotel          : %-27s│%n", hotel.getName());
+        System.out.printf( "│ Lokasi         : %-27s│%n", hotel.getLocation());
+        System.out.printf( "│ Check-in       : %-27s│%n", hotel.getCheckInDate());
+        System.out.printf( "│ Check-out      : %-27s│%n", hotel.getCheckOutDate());
+        System.out.printf( "│ Jumlah Tamu    : %-27d│%n", guestCount);
+        System.out.printf( "│ Total Harga    : %-27s│%n", String.format("Rp %,.0f", totalHarga));
+        System.out.println("└────────────────────────────────────────────┘");
     }
 
     // =================== GETTERS ===================
@@ -128,13 +144,13 @@ public final class HotelReservation extends Reservation {
      * TODO [ANGGOTA 2]: return nilai field hotel
      */
     public Hotel getHotel() {
-        return null; // TODO: return hotel;
+        return hotel;
     }
 
     /**
      * TODO [ANGGOTA 2]: return nilai field guestCount
      */
     public int getGuestCount() {
-        return 0; // TODO: return guestCount;
+        return guestCount;
     }
 }
