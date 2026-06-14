@@ -139,8 +139,58 @@ public class TravelApp {
      * @param scanner Scanner untuk membaca input pengguna
      */
     public void searchAndBookFlight(Scanner scanner) {
-        // TODO [ANGGOTA 3]: implementasikan alur di atas
-        System.out.println("[TODO] searchAndBookFlight() belum diimplementasikan");
+        System.out.print("Kota asal      : ");
+        String origin = scanner.nextLine();
+        System.out.print("Kota tujuan    : ");
+        String destination = scanner.nextLine();
+        System.out.print("Tanggal (YYYY-MM-DD): ");
+        String date = scanner.nextLine();
+
+        int passengerCount;
+        try {
+            System.out.print("Jumlah penumpang: ");
+            passengerCount = scanner.nextInt();
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Input tidak valid. Jumlah penumpang harus berupa angka.");
+            scanner.nextLine();
+            return;
+        }
+
+        List<Flight> results = searchFlights(origin, destination, date, passengerCount);
+        if (results.isEmpty()) {
+            System.out.println("Tidak ada penerbangan tersedia.");
+            return;
+        }
+
+        System.out.println("\nHasil pencarian:");
+        for (int i = 0; i < results.size(); i++) {
+            System.out.println((i + 1) + ". " + results.get(i));
+        }
+
+        int choice;
+        try {
+            System.out.print("Pilih penerbangan (1-" + results.size() + "), atau 0 untuk batal: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Input tidak valid.");
+            scanner.nextLine();
+            return;
+        }
+
+        if (choice == 0) return;
+        if (choice < 1 || choice > results.size()) {
+            System.out.println("Pilihan tidak valid.");
+            return;
+        }
+
+        System.out.print("Nama penumpang : ");
+        String customerName = scanner.nextLine();
+        System.out.print("Kontak         : ");
+        String customerContact = scanner.nextLine();
+
+        bookFlight(results.get(choice - 1), passengerCount, customerName, customerContact);
     }
 
     /**
@@ -167,8 +217,12 @@ public class TravelApp {
      */
     public List<Flight> searchFlights(String origin, String destination,
                                       String date, int passengerCount) {
-        // TODO [ANGGOTA 3]: gunakan flights.stream().filter(...).collect(Collectors.toList())
-        return new ArrayList<>(); // placeholder — hapus dan ganti dengan implementasi
+        return flights.stream()
+                .filter(f -> f.getOrigin().equalsIgnoreCase(origin))
+                .filter(f -> f.getDestination().equalsIgnoreCase(destination))
+                .filter(f -> f.getDate().equals(date))
+                .filter(f -> f.getAvailableSeats() >= passengerCount)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -195,8 +249,10 @@ public class TravelApp {
      */
     public void bookFlight(Flight flight, int passengerCount,
                            String customerName, String customerContact) {
-        // TODO [ANGGOTA 3]: implementasikan langkah-langkah di atas
-        System.out.println("[TODO] bookFlight() belum diimplementasikan");
+        FlightReservation reservation = new FlightReservation(flight, passengerCount, customerName, customerContact);
+        reservation.book();
+        reservations.add(reservation);
+        reservation.display();
     }
 
     // =================== FITUR 2: PENCARIAN & PEMESANAN HOTEL ===================
@@ -224,8 +280,58 @@ public class TravelApp {
      * @param scanner Scanner untuk membaca input pengguna
      */
     public void searchAndBookHotel(Scanner scanner) {
-        // TODO [ANGGOTA 3]: implementasikan alur di atas
-        System.out.println("[TODO] searchAndBookHotel() belum diimplementasikan");
+        System.out.print("Kota           : ");
+        String location = scanner.nextLine();
+        System.out.print("Tanggal check-in  (YYYY-MM-DD): ");
+        String checkIn = scanner.nextLine();
+        System.out.print("Tanggal check-out (YYYY-MM-DD): ");
+        String checkOut = scanner.nextLine();
+
+        int guestCount;
+        try {
+            System.out.print("Jumlah tamu    : ");
+            guestCount = scanner.nextInt();
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Input tidak valid. Jumlah tamu harus berupa angka.");
+            scanner.nextLine();
+            return;
+        }
+
+        List<Hotel> results = searchHotels(location, checkIn, checkOut, guestCount);
+        if (results.isEmpty()) {
+            System.out.println("Tidak ada hotel tersedia.");
+            return;
+        }
+
+        System.out.println("\nHasil pencarian:");
+        for (int i = 0; i < results.size(); i++) {
+            System.out.println((i + 1) + ". " + results.get(i));
+        }
+
+        int choice;
+        try {
+            System.out.print("Pilih hotel (1-" + results.size() + "), atau 0 untuk batal: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("Input tidak valid.");
+            scanner.nextLine();
+            return;
+        }
+
+        if (choice == 0) return;
+        if (choice < 1 || choice > results.size()) {
+            System.out.println("Pilihan tidak valid.");
+            return;
+        }
+
+        System.out.print("Nama tamu      : ");
+        String customerName = scanner.nextLine();
+        System.out.print("Kontak         : ");
+        String customerContact = scanner.nextLine();
+
+        bookHotel(results.get(choice - 1), guestCount, customerName, customerContact);
     }
 
     /**
@@ -250,8 +356,12 @@ public class TravelApp {
      */
     public List<Hotel> searchHotels(String location, String checkIn,
                                     String checkOut, int guestCount) {
-        // TODO [ANGGOTA 3]: gunakan hotels.stream().filter(...).collect(Collectors.toList())
-        return new ArrayList<>(); // placeholder — hapus dan ganti dengan implementasi
+        return hotels.stream()
+                .filter(h -> h.getLocation().equalsIgnoreCase(location))
+                .filter(h -> h.getCheckInDate().equals(checkIn))
+                .filter(h -> h.getCheckOutDate().equals(checkOut))
+                .filter(h -> h.getAvailableRooms() > 0)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -278,8 +388,10 @@ public class TravelApp {
      */
     public void bookHotel(Hotel hotel, int guestCount,
                           String customerName, String customerContact) {
-        // TODO [ANGGOTA 3]: implementasikan langkah-langkah di atas
-        System.out.println("[TODO] bookHotel() belum diimplementasikan");
+        HotelReservation reservation = new HotelReservation(hotel, guestCount, customerName, customerContact);
+        reservation.book();
+        reservations.add(reservation);
+        reservation.display();
     }
 
     // =================== FITUR 3: PEMBATALAN RESERVASI ===================
@@ -308,8 +420,18 @@ public class TravelApp {
      * @param scanner Scanner untuk membaca input pengguna
      */
     public void promptCancelReservation(Scanner scanner) {
-        // TODO [ANGGOTA 3]: implementasikan alur di atas
-        System.out.println("[TODO] promptCancelReservation() belum diimplementasikan");
+        System.out.print("Masukkan nomor konfirmasi: ");
+        try {
+            int confirmationNumber = scanner.nextInt();
+            scanner.nextLine();
+            cancelReservation(confirmationNumber);
+            System.out.println("Reservasi berhasil dibatalkan.");
+        } catch (ReservationNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (InputMismatchException e) {
+            System.out.println("Nomor konfirmasi harus berupa angka.");
+            scanner.nextLine();
+        }
     }
 
     /**
@@ -345,8 +467,17 @@ public class TravelApp {
      */
     public void cancelReservation(int confirmationNumber)
             throws ReservationNotFoundException {
-        // TODO [ANGGOTA 3]: implementasikan logika di atas
-        System.out.println("[TODO] cancelReservation() belum diimplementasikan");
+        for (Reservation res : reservations) {
+            if (res.getConfirmationNumber() == confirmationNumber) {
+                if (res instanceof FlightReservation fr) {
+                    fr.cancel();
+                } else if (res instanceof HotelReservation hr) {
+                    hr.cancel();
+                }
+                reservations.remove(res);
+                return;
+            }
+        }
         throw new ReservationNotFoundException(confirmationNumber);
     }
 
@@ -376,9 +507,15 @@ public class TravelApp {
      *     });
      */
     public void viewAllReservations() {
-        // TODO [ANGGOTA 3]: implementasikan tampilan semua reservasi
-        System.out.println("[TODO] viewAllReservations() belum diimplementasikan");
-        System.out.println("Jumlah reservasi saat ini: " + reservations.size());
+        if (reservations.isEmpty()) {
+            System.out.println("Belum ada reservasi.");
+            return;
+        }
+        System.out.println("=== DAFTAR PEMESANAN ANDA ===");
+        for (int i = 0; i < reservations.size(); i++) {
+            System.out.println("\n--- Reservasi ke-" + (i + 1) + " ---");
+            reservations.get(i).display();
+        }
     }
 
     // =================== HELPER: TAMPILKAN SEPARATOR ===================
