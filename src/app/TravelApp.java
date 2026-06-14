@@ -47,6 +47,7 @@ public class TravelApp {
     // =================== FITUR 1: PENERBANGAN ===================
 
     public void searchAndBookFlight(Scanner scanner) {
+        // 1. Kumpulkan kriteria pencarian dari pengguna
         System.out.print("Kota asal           : ");
         String origin = scanner.nextLine();
         System.out.print("Kota tujuan         : ");
@@ -54,28 +55,32 @@ public class TravelApp {
         System.out.print("Tanggal (YYYY-MM-DD): ");
         String date = scanner.nextLine();
 
+        // nextInt() bisa melempar InputMismatchException jika input bukan angka
         int passengerCount;
         try {
             System.out.print("Jumlah penumpang    : ");
             passengerCount = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // buang sisa newline agar nextLine() berikutnya tidak terbaca kosong
         } catch (InputMismatchException e) {
             System.out.println("Input tidak valid. Jumlah penumpang harus berupa angka.");
             scanner.nextLine();
             return;
         }
 
+        // 2. Cari penerbangan yang cocok dengan kriteria
         List<Flight> results = searchFlights(origin, destination, date, passengerCount);
         if (results.isEmpty()) {
             System.out.println("Tidak ada penerbangan tersedia.");
             return;
         }
 
+        // 3. Tampilkan hasil dengan nomor urut agar pengguna bisa memilih
         System.out.println("\nHasil pencarian:");
         for (int i = 0; i < results.size(); i++) {
             System.out.println((i + 1) + ". " + results.get(i));
         }
 
+        // 4. Pengguna memilih penerbangan berdasarkan nomor urut
         int choice;
         try {
             System.out.print("Pilih penerbangan (1-" + results.size() + "), atau 0 untuk batal: ");
@@ -87,12 +92,13 @@ public class TravelApp {
             return;
         }
 
-        if (choice == 0) return;
+        if (choice == 0) return; // pengguna batal
         if (choice < 1 || choice > results.size()) {
             System.out.println("Pilihan tidak valid.");
             return;
         }
 
+        // 5. Kumpulkan data pemesan lalu proses pemesanan
         System.out.print("Nama penumpang : ");
         String customerName = scanner.nextLine();
         System.out.print("Kontak         : ");
@@ -101,29 +107,49 @@ public class TravelApp {
         bookFlight(results.get(choice - 1), passengerCount, customerName, customerContact);
     }
 
+    /**
+     * Memfilter daftar penerbangan berdasarkan rute, tanggal, dan ketersediaan kursi.
+     *
+     * @param origin         kota asal (case-insensitive)
+     * @param destination    kota tujuan (case-insensitive)
+     * @param date           tanggal (YYYY-MM-DD)
+     * @param passengerCount jumlah kursi yang dibutuhkan
+     * @return list penerbangan yang memenuhi semua kriteria
+     */
     public List<Flight> searchFlights(String origin, String destination,
                                       String date, int passengerCount) {
         return flights.stream()
-                .filter(f -> f.getOrigin().equalsIgnoreCase(origin))
-                .filter(f -> f.getDestination().equalsIgnoreCase(destination))
-                .filter(f -> f.getDate().equals(date))
-                .filter(f -> f.getAvailableSeats() >= passengerCount)
+                .filter(f -> f.getOrigin().equalsIgnoreCase(origin))           // cocokkan kota asal
+                .filter(f -> f.getDestination().equalsIgnoreCase(destination)) // cocokkan kota tujuan
+                .filter(f -> f.getDate().equals(date))                         // tanggal harus exact match
+                .filter(f -> f.getAvailableSeats() >= passengerCount)          // pastikan kursi cukup
                 .collect(Collectors.toList());
     }
 
-
+    /**
+     * Membuat {@link FlightReservation}, mengonfirmasi pemesanan, dan menyimpannya ke daftar reservasi.
+     *
+     * @param flight          penerbangan yang dipilih
+     * @param passengerCount  jumlah penumpang
+     * @param customerName    nama pemesan
+     * @param customerContact kontak pemesan
+     */
     public void bookFlight(Flight flight, int passengerCount,
                            String customerName, String customerContact) {
+        // Buat objek reservasi dengan data penerbangan dan pemesan
         FlightReservation reservation = new FlightReservation(flight, passengerCount, customerName, customerContact);
+        // Generate nomor konfirmasi dan kurangi kursi tersedia
         reservation.book();
+        // Simpan ke daftar agar bisa dilihat dan dibatalkan nanti
         reservations.add(reservation);
+        // Tampilkan kotak konfirmasi ke pengguna
         reservation.display();
     }
 
     // =================== FITUR 2: HOTEL ===================
 
-
     public void searchAndBookHotel(Scanner scanner) {
+        // 1. Kumpulkan kriteria pencarian dari pengguna
         System.out.print("Kota                   : ");
         String location = scanner.nextLine();
         System.out.print("Tanggal check-in  (YYYY-MM-DD): ");
@@ -135,24 +161,27 @@ public class TravelApp {
         try {
             System.out.print("Jumlah tamu            : ");
             guestCount = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // buang sisa newline
         } catch (InputMismatchException e) {
             System.out.println("Input tidak valid. Jumlah tamu harus berupa angka.");
             scanner.nextLine();
             return;
         }
 
+        // 2. Cari hotel yang cocok dengan kriteria
         List<Hotel> results = searchHotels(location, checkIn, checkOut, guestCount);
         if (results.isEmpty()) {
             System.out.println("Tidak ada hotel tersedia.");
             return;
         }
 
+        // 3. Tampilkan hasil dengan nomor urut
         System.out.println("\nHasil pencarian:");
         for (int i = 0; i < results.size(); i++) {
             System.out.println((i + 1) + ". " + results.get(i));
         }
 
+        // 4. Pengguna memilih hotel
         int choice;
         try {
             System.out.print("Pilih hotel (1-" + results.size() + "), atau 0 untuk batal: ");
@@ -164,12 +193,13 @@ public class TravelApp {
             return;
         }
 
-        if (choice == 0) return;
+        if (choice == 0) return; // pengguna batal
         if (choice < 1 || choice > results.size()) {
             System.out.println("Pilihan tidak valid.");
             return;
         }
 
+        // 5. Kumpulkan data tamu lalu proses pemesanan
         System.out.print("Nama tamu  : ");
         String customerName = scanner.nextLine();
         System.out.print("Kontak     : ");
@@ -178,23 +208,43 @@ public class TravelApp {
         bookHotel(results.get(choice - 1), guestCount, customerName, customerContact);
     }
 
-
+    /**
+     * Memfilter daftar hotel berdasarkan lokasi, tanggal, dan ketersediaan kamar.
+     * Kecocokan tanggal menggunakan exact match terhadap data inventori.
+     *
+     * @param location  kota hotel (case-insensitive)
+     * @param checkIn   tanggal check-in (YYYY-MM-DD)
+     * @param checkOut  tanggal check-out (YYYY-MM-DD)
+     * @param guestCount jumlah tamu (tidak difilter, hanya diteruskan ke bookHotel)
+     * @return list hotel yang memenuhi semua kriteria
+     */
     public List<Hotel> searchHotels(String location, String checkIn,
                                     String checkOut, int guestCount) {
         return hotels.stream()
-                .filter(h -> h.getLocation().equalsIgnoreCase(location))
-                .filter(h -> h.getCheckInDate().equals(checkIn))
-                .filter(h -> h.getCheckOutDate().equals(checkOut))
-                .filter(h -> h.getAvailableRooms() > 0)
+                .filter(h -> h.getLocation().equalsIgnoreCase(location))  // cocokkan kota
+                .filter(h -> h.getCheckInDate().equals(checkIn))          // tanggal check-in exact match
+                .filter(h -> h.getCheckOutDate().equals(checkOut))        // tanggal check-out exact match
+                .filter(h -> h.getAvailableRooms() > 0)                   // hanya tampilkan yang masih ada kamar
                 .collect(Collectors.toList());
     }
 
-
+    /**
+     * Membuat {@link HotelReservation}, mengonfirmasi pemesanan, dan menyimpannya ke daftar reservasi.
+     *
+     * @param hotel           hotel yang dipilih
+     * @param guestCount      jumlah tamu
+     * @param customerName    nama pemesan
+     * @param customerContact kontak pemesan
+     */
     public void bookHotel(Hotel hotel, int guestCount,
                           String customerName, String customerContact) {
+        // Buat objek reservasi dengan data hotel dan pemesan
         HotelReservation reservation = new HotelReservation(hotel, guestCount, customerName, customerContact);
+        // Generate nomor konfirmasi dan kurangi 1 kamar tersedia
         reservation.book();
+        // Simpan ke daftar agar bisa dilihat dan dibatalkan nanti
         reservations.add(reservation);
+        // Tampilkan kotak konfirmasi ke pengguna
         reservation.display();
     }
 
@@ -205,34 +255,50 @@ public class TravelApp {
         try {
             int confirmationNumber = scanner.nextInt();
             scanner.nextLine();
+            // Delegasikan pencarian dan pembatalan ke cancelReservation()
             cancelReservation(confirmationNumber);
             System.out.println("Reservasi berhasil dibatalkan.");
         } catch (ReservationNotFoundException e) {
+            // Nomor tidak ditemukan — tampilkan pesan dari exception
             System.out.println(e.getMessage());
         } catch (InputMismatchException e) {
+            // Pengguna mengetik teks, bukan angka
             System.out.println("Nomor konfirmasi harus berupa angka.");
             scanner.nextLine();
         }
     }
 
-
+    /**
+     * Mencari reservasi berdasarkan nomor konfirmasi, membatalkannya, dan menghapusnya dari daftar.
+     * Menggunakan pattern matching (instanceof) untuk memanggil cancel() yang tepat.
+     *
+     * @param confirmationNumber nomor konfirmasi yang ingin dibatalkan
+     * @throws ReservationNotFoundException jika nomor konfirmasi tidak ditemukan
+     */
     public void cancelReservation(int confirmationNumber)
             throws ReservationNotFoundException {
         for (Reservation res : reservations) {
             if (res.getConfirmationNumber() == confirmationNumber) {
+                // Pattern matching: tentukan tipe reservasi lalu panggil cancel() yang sesuai
                 if (res instanceof FlightReservation fr) {
-                    fr.cancel();
+                    fr.cancel(); // kembalikan kursi ke inventori penerbangan
                 } else if (res instanceof HotelReservation hr) {
-                    hr.cancel();
+                    hr.cancel(); // kembalikan kamar ke inventori hotel
                 }
-                reservations.remove(res);
+                reservations.remove(res); // hapus dari daftar aktif setelah dibatalkan
                 return;
             }
         }
+        // Sampai di sini berarti tidak ada reservasi dengan nomor tersebut
         throw new ReservationNotFoundException(confirmationNumber);
     }
 
+    // =================== FITUR 4: LIHAT SEMUA PEMESANAN ===================
 
+    /**
+     * Menampilkan semua reservasi aktif. Memanfaatkan polimorfisme: setiap elemen
+     * memanggil display() versinya masing-masing (FlightReservation atau HotelReservation).
+     */
     public void viewAllReservations() {
         if (reservations.isEmpty()) {
             System.out.println("Belum ada reservasi.");
@@ -241,12 +307,14 @@ public class TravelApp {
         System.out.println("=== DAFTAR PEMESANAN ANDA ===");
         for (int i = 0; i < reservations.size(); i++) {
             System.out.println("\n--- Reservasi ke-" + (i + 1) + " ---");
+            // display() otomatis memanggil versi FlightReservation atau HotelReservation (polimorfisme)
             reservations.get(i).display();
         }
     }
 
     // =================== HELPER ===================
 
+    /** Mencetak garis pemisah dekoratif untuk UI konsol. */
     public void printSeparator() {
         System.out.println("════════════════════════════════════════════");
     }
