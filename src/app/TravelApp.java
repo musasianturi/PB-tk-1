@@ -91,7 +91,17 @@ public class TravelApp {
      *     hotels.add(new Hotel("HTL-005", "Aston Makassar",         "Makassar","2025-08-01", "2025-08-03", 20,   500_000.0));
      */
     private void initSampleData() {
-        // TODO [ANGGOTA 3]: tambahkan data penerbangan dan hotel di sini
+        flights.add(new Flight("GA-101", "Jakarta",  "Bali",       "2025-08-01",  50, 1_500_000.0));
+        flights.add(new Flight("QG-201", "Jakarta",  "Surabaya",   "2025-08-01",  80,   800_000.0));
+        flights.add(new Flight("ID-301", "Bali",     "Lombok",     "2025-08-02",  30,   600_000.0));
+        flights.add(new Flight("GA-401", "Surabaya", "Makassar",   "2025-08-03",  60, 1_200_000.0));
+        flights.add(new Flight("SJ-501", "Jakarta",  "Yogyakarta", "2025-08-01", 100,   700_000.0));
+
+        hotels.add(new Hotel("HTL-001", "Hotel Mulia Jakarta",    "Jakarta",    "2025-08-01", "2025-08-03", 10,   800_000.0));
+        hotels.add(new Hotel("HTL-002", "Potato Head Beach Club", "Bali",       "2025-08-01", "2025-08-04",  5, 2_500_000.0));
+        hotels.add(new Hotel("HTL-003", "Sheraton Surabaya",      "Surabaya",   "2025-08-01", "2025-08-02", 15,   600_000.0));
+        hotels.add(new Hotel("HTL-004", "Tentrem Yogyakarta",     "Yogyakarta", "2025-08-01", "2025-08-03",  8, 1_100_000.0));
+        hotels.add(new Hotel("HTL-005", "Aston Makassar",         "Makassar",   "2025-08-01", "2025-08-03", 20,   500_000.0));
     }
 
     // =================== FITUR 1: PENCARIAN & PEMESANAN PENERBANGAN ===================
