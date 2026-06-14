@@ -3,30 +3,7 @@ import app.TravelApp;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-/**
- * Main adalah titik masuk (entry point) aplikasi Sistem Pemesanan Perjalanan.
- *
- * KONSEP JAVA — Main Driver:
- *   Method main() adalah method pertama yang dipanggil JVM saat program dijalankan.
- *   Di sini kita membuat satu instance TravelApp dan menjalankan loop menu utama.
- *
- * KONSEP JAVA — while(true) loop:
- *   Loop ini terus berjalan hingga pengguna memilih "Keluar" (case 0).
- *   Ini adalah pola umum untuk menu interaktif konsol.
- *
- * KONSEP JAVA — switch expression (Java 14+):
- *   'switch (choice) { case 1 -> ...; }' lebih ringkas dari switch statement tradisional.
- *   Tidak perlu 'break' karena setiap case otomatis terisolasi.
- *
- * FILE INI SUDAH LENGKAP — tidak perlu diubah oleh tim.
- * (Loop menu, routing ke TravelApp, dan error handling input sudah ada.)
- *
- * Cara menjalankan program:
- *   1. Compile: dari folder TK-1/, jalankan:
- *        javac --enable-preview --release 17 -d bin $(find src -name "*.java")
- *   2. Run:
- *        java --enable-preview -cp bin Main
- */
+
 public class Main {
 
     public static void main(String[] args) {
@@ -38,13 +15,10 @@ public class Main {
         System.out.println("║   PERJALANAN — TravelKu                      ║");
         System.out.println("╚══════════════════════════════════════════════╝");
 
-        // Loop utama: terus tampilkan menu sampai pengguna keluar
         while (true) {
             tampilkanMenu();
-
             int choice = bacaPilihanMenu(scanner);
 
-            // Routing pilihan menu ke method di TravelApp
             switch (choice) {
                 case 1 -> {
                     app.printSeparator();
@@ -73,18 +47,15 @@ public class Main {
                 case 0 -> {
                     System.out.println("\nTerima kasih telah menggunakan TravelKu. Sampai jumpa!");
                     scanner.close();
-                    return; // keluar dari main(), program selesai
+                    return;
                 }
                 default -> System.out.println("Pilihan tidak valid. Silakan masukkan angka 0-4.");
             }
 
-            System.out.println(); // baris kosong sebelum menu berikutnya
+            System.out.println();
         }
     }
 
-    /**
-     * Tampilkan menu utama ke konsol.
-     */
     private static void tampilkanMenu() {
         System.out.println("════════════════════════════════════════════");
         System.out.println("              MENU UTAMA");
@@ -98,24 +69,13 @@ public class Main {
         System.out.print("Pilih menu (0-4): ");
     }
 
-    /**
-     * Baca pilihan menu dari pengguna dengan penanganan error untuk input non-angka.
-     *
-     * KONSEP JAVA — Exception Handling:
-     *   InputMismatchException dilempar oleh scanner.nextInt() jika pengguna mengetik
-     *   teks (bukan angka). Blok catch menangkapnya dan mengembalikan nilai -1
-     *   sehingga switch masuk ke case 'default' dan menampilkan pesan error.
-     *
-     * @param scanner Scanner yang digunakan untuk membaca input
-     * @return angka pilihan, atau -1 jika input tidak valid
-     */
     private static int bacaPilihanMenu(Scanner scanner) {
         try {
             int choice = scanner.nextInt();
-            scanner.nextLine(); // flush sisa newline di buffer
+            scanner.nextLine();
             return choice;
         } catch (InputMismatchException e) {
-            scanner.nextLine(); // buang input tidak valid dari buffer
+            scanner.nextLine();
             System.out.println("Input tidak valid. Harap masukkan angka.");
             return -1;
         }

@@ -1,8 +1,13 @@
 # Hasil compile — auto-generated, jangan di-commit
 bin/
+out/
 
 # File IDE (opsional, sesuaikan dengan IDE yang dipakai tim)
 .idea/
 *.iml
 .vscode/
 *.class
+
+# Unit test & dependency — tidak perlu di-commit
+test/
+lib/
